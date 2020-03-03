@@ -2,7 +2,7 @@ name: build-openwrt-firmware
 
 on: 
   watch:
-    types: started
+#    types: started
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt.git
