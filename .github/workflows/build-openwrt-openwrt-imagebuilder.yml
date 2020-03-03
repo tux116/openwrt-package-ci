@@ -3,7 +3,7 @@ name: openwrt-imagebuilder
 on: 
   push:
     branches: 
-      - master
+      - dev
 #  watch:
 #    types: started
 
