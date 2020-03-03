@@ -1,8 +1,11 @@
 name: openwrt-imagebuilder
 
 on: 
-  watch:
-    types: started
+  push:
+    branches: 
+      - master
+#  watch:
+#    types: started
 
 env:
   VERSION: 19.07.0
@@ -31,7 +34,7 @@ jobs:
         tar -xvf openwrt-imagebuilder-*-x86-64.Linux-x86_64.tar.xz
         cd openwrt-imagebuilder-*
         sed -i 's/192.168.1.1/172.16.32.8/g' .config
-        make image PROFILE=Generic PACKAGES="base-files libc libgcc busybox dropbear mtd uci opkg netifd fstools uclient-fetch logd partx-utils mkf2fs e2fsprogs ca-certificates -bnx2-firmware wget kmod-button-hotplug -dnsmasq dnsmasq-full iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c luci luci-app-qos luci-app-upnp luci-proto-ipv6 luci-i18n-base-zh-cn kmod-e100 kmod-e1000 kmod-vmxnet3 kmod-wireguard" CONFIG_TARGET_KERNEL_PARTSIZE=256 CONFIG_TARGET_ROOTFS_PARTSIZE=1024
+        make image PROFILE=Generic PACKAGES="-bnx2-firmware -dnsmasq dnsmasq-full iptables ip6tables ppp ppp-mod-pppoe firewall odhcpd-ipv6only odhcp6c luci luci-i18n-base-zh-cn kmod-e100 kmod-e1000 kmod-vmxnet3 kmod-wireguard" CONFIG_TARGET_KERNEL_PARTSIZE=256 CONFIG_TARGET_ROOTFS_PARTSIZE=1024
     - name: Upload artifact
       uses: actions/upload-artifact@master
       with:
