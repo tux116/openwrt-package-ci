@@ -1,7 +1,10 @@
 name: build-openwrt-firmware
 
 on: 
-  watch:
+  push:
+    branches: 
+      - dev
+#  watch:
 #    types: started
 
 env:
