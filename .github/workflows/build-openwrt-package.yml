@@ -47,18 +47,19 @@ jobs:
 
     - name: Clone
       run: |
-        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt && cd openwrt
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
     - name: Update feeds
       run: |
+        cd openwrt
         echo 'src-git lienol https://github.com/Lienol/openwrt-package' >> feeds.conf.default
         git clone https://github.com/openwrt-develop/luci-theme-atmaterial.git package/luci-theme-atmaterial
         git clone https://github.com/jerrykuku/luci-theme-argon.git package/luci-theme-argon
         git clone https://github.com/Myoko/openwrt-packages-theme.git
         mv openwrt-packages-theme/luci-theme-a* package/
-        rm -rf openwrt-packages-theme
         ./scripts/feeds update -a
 
     - name: Install feeds
       run: |
+        cd openwrt
         ./scripts/feeds install -a
