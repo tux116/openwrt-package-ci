@@ -3,10 +3,10 @@ name: build-openwrt-firmware
 on: 
   push:
     tags: 
-      - '*'
+      - 'v0.7'
 
 env:
-  REPO_URL: https://github.com/openwrt/openwrt.git
+  REPO_URL: https://github.com/coolsnowwolf/lede.git
   CONFIG_FILE: config.new
   FREE_UP_DISK: false
   TZ: Asia/Shanghai
