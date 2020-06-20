@@ -6,8 +6,8 @@ on:
       - 'v0.3'
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede.git
-  # CONFIG_FILE: config.dev
+  REPO_URL: https://github.com/Lienol/openwrt.git
+  CONFIG_FILE: config.new
   FREE_UP_DISK: false
   TZ: Asia/Shanghai
 
@@ -46,10 +46,12 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL openwrt
         cd openwrt
+        ./scripts/feeds clean
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
         git clone https://github.com/kenzok8/small package/small
+        rm -f .config
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE .config
         make download -j8
         find ./dl/ -size -1024c -exec rm -f {} \;
