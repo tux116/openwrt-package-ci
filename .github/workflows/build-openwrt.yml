@@ -3,7 +3,7 @@ name: build-openwrt-firmware
 on: 
   push:
     tags: 
-      - 'v0.6'
+      - 'v0.8'
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt.git
@@ -59,7 +59,6 @@ jobs:
 
     - name: make package
       run: |
-        cd /home/runner/work/openwrt-18.06/
         git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
         git clone https://github.com/kenzok8/small package/small
         rm -f .config
