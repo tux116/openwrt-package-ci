@@ -2,8 +2,8 @@ name: openwrt-imagebuilder
 
 on: 
   push:
-    branches: 
-      - dev
+    tags: 
+      - 'v0.3'
 #  watch:
 #    types: started
 
