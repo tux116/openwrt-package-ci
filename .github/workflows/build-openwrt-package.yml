@@ -3,7 +3,7 @@ name: build-openwrt-firmware
 on: 
   push:
     tags: 
-      - 'v0.4'
+      - '*'
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt.git
@@ -47,12 +47,13 @@ jobs:
         git clone $REPO_URL openwrt
         cd openwrt
         ./scripts/feeds clean
-        # git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
-        # git clone https://github.com/kenzok8/small package/small
+        git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
+        git clone https://github.com/kenzok8/small package/small
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         rm -f .config
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE .config
+        make defconfig
         make download -j8
         find ./dl/ -size -1024c -exec rm -f {} \;
         make -j$(nproc) || make -j1 V=s
