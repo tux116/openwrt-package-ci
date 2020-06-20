@@ -3,12 +3,11 @@ name: build-openwrt-firmware
 on: 
   push:
     tags: 
-      - 'v0.2'
+      - 'v0.3'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede.git
-  SSR_PLUS: https://github.com/maxlicheng/luci-app-ssr-plus.git
-  CONFIG_FILE: config.dev
+  # CONFIG_FILE: config.dev
   FREE_UP_DISK: false
   TZ: Asia/Shanghai
 
@@ -49,8 +48,8 @@ jobs:
         cd openwrt
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        mkdir package/openwrt-packages
-        git clone $SSR_PLUS package/openwrt-packages/luci-app-ssr-plus
+        git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
+        git clone https://github.com/kenzok8/small package/small
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE .config
         make download -j8
         find ./dl/ -size -1024c -exec rm -f {} \;
