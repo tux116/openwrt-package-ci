@@ -3,7 +3,7 @@ name: build-openwrt-firmware
 on: 
   push:
     tags: 
-      - 'v0.8'
+      - 'v0.9'
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt.git
@@ -63,7 +63,6 @@ jobs:
         git clone https://github.com/kenzok8/small package/small
         rm -f .config
         [ -e $CONFIG_FILE_PKG ] && mv $CONFIG_FILE_PKG .config
-        make defconfig
         make -j$(nproc) || make -j1 V=s
 
     - name: Upload artifact
