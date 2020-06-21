@@ -47,9 +47,7 @@ jobs:
       - name: make image
         working-directory: /workdir
         run: |
-          git clone https://github.com/openwrt/openwrt.git -b openwrt-18.06
-          pwd
-          ls
+          git clone https://github.com/openwrt/openwrt.git -b openwrt-18.06 openwrt
           cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
