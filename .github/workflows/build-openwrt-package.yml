@@ -3,7 +3,7 @@ name: build-openwrt-leno-firmware
 on: 
   push:
     tags: 
-      - 'v0.11'
+      - 'v0.12'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede.git
@@ -61,4 +61,4 @@ jobs:
         if: steps.compile.outputs.status == 'success'
         with:
           name: OpenWrt-${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: openwrt/bin
+          path: /workdir/openwrt/bin

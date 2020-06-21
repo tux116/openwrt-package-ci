@@ -3,10 +3,9 @@ name: build-openwrt-18.06-firmware
 on: 
   push:
     tags: 
-      - 'v0.11'
+      - 'v0.12'
 
 env:
-  REPO_URL: https://github.com/openwrt/openwrt.git
   CONFIG_FILE: config.x64
   CONFIG_FILE_PKG: config.pkg
   FREE_UP_DISK: false
@@ -50,7 +49,7 @@ jobs:
       - name: make image
         working-directory: /workdir
         run: |
-          git clone $REPO_URL -b openwrt-18.06
+          git clone https://github.com/openwrt/openwrt.git -b openwrt-18.06
           cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
@@ -76,4 +75,4 @@ jobs:
         if: steps.compile.outputs.status == 'success'
         with:
           name: OpenWrt-${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: openwrt/bin
+          path: /workdir/openwrt/bin
