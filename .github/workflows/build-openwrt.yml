@@ -3,12 +3,11 @@ name: build-openwrt-18.06-firmware
 on: 
   push:
     tags: 
-      - 'v0.12'
+      - 'v0.12.1'
 
 env:
   CONFIG_FILE: config.x64
   CONFIG_FILE_PKG: config.pkg
-  FREE_UP_DISK: false
   TZ: Asia/Shanghai
 
 jobs:
@@ -34,7 +33,6 @@ jobs:
           sudo -E apt-get -qq clean
   
       - name: Clean
-        if: env.FREE_UP_DISK == 'true'
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
