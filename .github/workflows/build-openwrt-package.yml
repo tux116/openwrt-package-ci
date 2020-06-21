@@ -3,7 +3,7 @@ name: build-openwrt-leno-firmware
 on: 
   push:
     tags: 
-      - 'v0.14.2'
+      - 'v0.14.3'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede.git
