@@ -3,7 +3,7 @@ name: build-openwrt-18.06-firmware
 on: 
   push:
     tags: 
-      - 'v0.12.2'
+      - 'v0.13'
 
 env:
   CONFIG_FILE: config.x64
