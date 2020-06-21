@@ -3,7 +3,7 @@ name: build-openwrt-leno-firmware
 on: 
   push:
     tags: 
-      - 'v0.14'
+      - 'v0.14.1'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede.git
@@ -43,11 +43,27 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           make defconfig
-          rm -f .config
-          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE .config
+          sed -i 's/192.168.1.1/172.16.32.8/g' .config
+          sed -i 's/CONFIG_TARGET_KERNEL_PARTSIZE=16/CONFIG_TARGET_KERNEL_PARTSIZE=256/g' .config
+          sed -i 's/CONFIG_TARGET_ROOTFS_PARTSIZE=160/CONFIG_TARGET_ROOTFS_PARTSIZE=1024/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-app-passwall is not set/CONFIG_PACKAGE_luci-app-passwall=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin is not set/CONFIG_PACKAGE_luci-app-passwall_INCLUDE_v2ray-plugin=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-app-passwall_INCLUDE_simple-obfs is not set/CONFIG_PACKAGE_luci-app-passwall_INCLUDE_simple-obfs=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks is not set/CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_socks is not set/CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Shadowsocks_socks=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan is not set/CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Trojan=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-app-smartdns is not set/CONFIG_PACKAGE_luci-app-smartdns=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_smartdns is not set/CONFIG_PACKAGE_smartdns=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_open-vm-tools is not set/CONFIG_PACKAGE_open-vm-tools=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-theme-material is not set/CONFIG_PACKAGE_luci-theme-material=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-theme-netgear is not set/CONFIG_PACKAGE_luci-theme-netgear=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-theme-opentomato is not set/CONFIG_PACKAGE_luci-theme-opentomato=y/g' .config
+          sed -i 's/# CONFIG_PACKAGE_luci-theme-opentomcat is not set/CONFIG_PACKAGE_luci-theme-opentomcat=y/g' .config
           make download -j8
           find ./dl/ -size -1024c -exec rm -f {} \;
           grep x86 .config
+          grep passwall .config
+          grep ssr .config 
           make -j$(nproc) || make -j1 V=s
           echo "::set-output name=status::success"
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
