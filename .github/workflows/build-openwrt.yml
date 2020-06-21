@@ -50,7 +50,7 @@ jobs:
       - name: make image
         working-directory: /workdir
         run: |
-          git clone $REPO_URL -b openwrt-18.06 openwrt
+          git clone $REPO_URL -b openwrt-18.06
           cd openwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
