@@ -3,7 +3,7 @@ name: build-openwrt-18.06-firmware
 on: 
   push:
     tags: 
-      - 'v0.13'
+      - 'v0.14'
 
 env:
   CONFIG_FILE: config.x64
@@ -40,15 +40,17 @@ jobs:
         run: |
           git clone https://github.com/openwrt/openwrt.git -b openwrt-18.06 openwrt
           cd openwrt
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
           git clone https://github.com/kenzok8/small package/small
           git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
-          [ -e $CONFIG_FILE_PKG ] && mv $CONFIG_FILE_PKG .config
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
           make defconfig
+          rm -f .config
+          [ -e $CONFIG_FILE_PKG ] && mv $CONFIG_FILE_PKG .config
           make download -j8
           find ./dl/ -size -1024c -exec rm -f {} \;
           make download -j8
+          grep x86 .config
           make -j$(nproc) || make -j1 V=s
           du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
           du -h --max-depth=1 ./build_dir
