@@ -38,8 +38,8 @@ jobs:
           git clone $REPO_URL openwrt
           cd openwrt
           ./scripts/feeds clean
-          git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
           git clone https://github.com/kenzok8/small package/small
+          git clone https://github.com/kenzok8/openwrt-packages package/openwrt-packages
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           rm -f .config
