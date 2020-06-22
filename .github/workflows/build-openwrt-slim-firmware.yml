@@ -3,7 +3,7 @@ name: build-openwrt-slim-firmware
 on: 
   push:
     tags: 
-      - 'v0.14.7'
+      - 'v0.14.8'
 env:
   SSH_ACTIONS: false
   UPLOAD_BIN_DIR: false
@@ -61,6 +61,7 @@ jobs:
           mv ctcgfw/package/ctcgfw/gost .
           mv ctcgfw/package/ctcgfw/luci-app-gost .
           rm -rf ctcgfw
+          cd ../../
 
       - name: feeds
         run: |
