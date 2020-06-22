@@ -309,15 +309,20 @@ jobs:
           du -h --max-depth=1 ./build_dir
           du -h --max-depth=1 ./bin
 
+      - name: tar
+        working-directory: /workdir
+        run: |
+          cd /workdir/openwrt/bin && tar -zvcf ../openwrt.tar.gz *
+
       - name: Upload bin directory
         uses: actions/upload-artifact@master
         if: steps.compile.outputs.status == 'success'
         with:
           name: OpenWrt-${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: /workdir/openwrt/bin
+          path: /workdir/openwrt/openwrt.tar.gz
 
       - name: Upload firmware to cowtransfer
         run: |
           curl -fsSL git.io/file-transfer | sh
-          ./transfer cow --block 2621440 -s -p 64 --no-progress /workdir/openwrt/bin 2>&1 | tee cowtransfer.log
+          ./transfer cow --block 2621440 -s -p 64 --no-progress /workdir/openwrt/openwrt.tar.gz 2>&1 | tee cowtransfer.log
           echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
