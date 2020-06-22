@@ -3,7 +3,7 @@ name: build-openwrt-slim-firmware
 on: 
   push:
     tags: 
-      - 'v0.14.8'
+      - 'v0.14.9'
 env:
   SSH_ACTIONS: false
   UPLOAD_BIN_DIR: false
@@ -61,16 +61,19 @@ jobs:
           mv ctcgfw/package/ctcgfw/gost .
           mv ctcgfw/package/ctcgfw/luci-app-gost .
           rm -rf ctcgfw
-          cd ../../
 
       - name: feeds
+        working-directory: /workdir
         run: |
-          sed -i '5s/#src-git/src-git/g' ./feeds.conf.default
+          cd openwrt
+          sed -i '5s/#src-git/src-git/g' feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
       - name: configuration
+        working-directory: /workdir
         run: |
+          cd openwrt
           rm -f ./.config*
           touch ./.config
           #
@@ -316,13 +319,17 @@ jobs:
           make defconfig
 
       - name: download
+        working-directory: /workdir
         run: |
+          cd openwrt
           make download -j8
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
 
       - name: compile
+        working-directory: /workdir
         run: |
+          cd openwrt
           make -j$(($(nproc) + 1))  V=s
           echo "======================="
           echo "Space usage:"
@@ -341,12 +348,14 @@ jobs:
           path: /workdir/openwrt/bin
 
       - name: Upload firmware to cowtransfer
+        working-directory: /workdir
         run: |
           curl -fsSL git.io/file-transfer | sh
           ./transfer cow --block 2621440 -s -p 64 --no-progress /workdir/openwrt/bin 2>&1 | tee cowtransfer.log
           echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
       
       - name: Upload firmware to WeTransfer
+        working-directory: /workdir
         run: |
           curl -fsSL git.io/file-transfer | sh
           ./transfer wet -s -p 16 --no-progress /workdir/openwrt/bin 2>&1 | tee wetransfer.log
