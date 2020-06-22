@@ -4,6 +4,7 @@ on:
   push:
     tags: 
       - 'v0.14.11'
+      
 env:
   SSH_ACTIONS: false
   UPLOAD_BIN_DIR: false

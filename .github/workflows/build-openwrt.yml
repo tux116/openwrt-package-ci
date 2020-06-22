@@ -3,8 +3,10 @@ name: build-openwrt-18.06-firmware
 on: 
   push:
     tags: 
-      - 'v0.14'
-
+      - 'v0.14.12'
+  watch:
+    types: started
+    
 env:
   CONFIG_FILE: config.x64
   CONFIG_FILE_PKG: config.pkg
@@ -13,13 +15,13 @@ env:
 jobs:
   build:
     runs-on: ubuntu-18.04
-
+    if: github.event.repository.owner.id == github.event.sender.id
     steps:
 
       - name: Checkout
         uses: actions/checkout@master
   
-      - name: Initialization
+      - name: cleanup
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
@@ -35,43 +37,47 @@ jobs:
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
     
-      - name: make image
+      - name: complie
         working-directory: /workdir
         run: |
           git clone https://github.com/openwrt/openwrt.git -b openwrt-18.06 openwrt
           cd openwrt
-          echo "src-git other https://gitee.com/skylens/other.git" 
+          echo "src-git themes https://github.com/tux116/themes" >> ./feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          wget https://downloads.openwrt.org/releases/18.06.4/targets/x86/64/config.seed -O .config
-          sed -i 's/# CONFIG_VMDK_IMAGES is not set/CONFIG_VMDK_IMAGES=y/g' .config
-          sed -i 's/192.168.1.1/172.16.32.8/g' .config
-          sed -i 's/# CONFIG_TARGET_ROOTFS_EXT4FS is not set/CONFIG_TARGET_ROOTFS_EXT4FS=y/g' .config
-          sed -i 's/CONFIG_TARGET_KERNEL_PARTSIZE=16/CONFIG_TARGET_KERNEL_PARTSIZE=256/g' .config
-          sed -i 's/CONFIG_TARGET_ROOTFS_PARTSIZE=160/CONFIG_TARGET_ROOTFS_PARTSIZE=1024/g' .config
+          wget https://downloads.openwrt.org/releases/18.06.4/targets/x86/64/config.seed -O ./.config
+          cat >>./.config<<EOF
+          CONFIG_GRUB_TIMEOUT="0"
+          CONFIG_GRUB_TITLE="OpenWrt"
+          CONFIG_VMDK_IMAGES=y
+          CONFIG_VHD_IMAGES=y
+          CONFIG_QCOW2_IMAGES=y
+          CONFIG_TARGET_ROOTFS_EXT4FS=y
+          # CONFIG_TARGET_ROOTFS_SQUASHFS is not set
+          CONFIG_TARGET_KERNEL_PARTSIZE=256
+          CONFIG_TARGET_ROOTFS_PARTSIZE=1024
+          CONFIG_TARGET_PREINIT_IP="172.16.32.8"
+          CONFIG_TARGET_PREINIT_BROADCAST="172.16.32.255"
+          EOF
+          make defconfig
           make download -j8
           find ./dl/ -size -1024c -exec rm -f {} \;
-          make download -j8
-          make -j$(nproc) || make -j1 V=s
+          make -j$(($(nproc) + 1))  V=s || make -j1 V=s
           du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
           du -h --max-depth=1 ./build_dir
           du -h --max-depth=1 ./bin
   
-      - name: Upload bin directory
+      - name: upload artifact
         uses: actions/upload-artifact@master
         with:
           name: OpenWrt-18.06
           path: /workdir/openwrt/bin
 
-      - name: Upload firmware to cowtransfer
+      - name: upload tar
+        working-directory: /workdir
         run: |
+          cd /workdir/openwrt/bin && tar -zvcf ../openwrt.tar.gz *
           curl -fsSL git.io/file-transfer | sh
-          ./transfer cow --block 2621440 -s -p 64 --no-progress /workdir/openwrt/bin 2>&1 | tee cowtransfer.log
+          ./transfer cow --block 2621440 -s -p 64 --no-progress /workdir/openwrt/openwrt.tar.gz 2>&1 | tee cowtransfer.log
           echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-      
-      - name: Upload firmware to WeTransfer
-        run: |
-          curl -fsSL git.io/file-transfer | sh
-          ./transfer wet -s -p 16 --no-progress /workdir/openwrt/bin 2>&1 | tee wetransfer.log
-          echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
   
