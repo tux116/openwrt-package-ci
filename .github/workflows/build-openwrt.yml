@@ -99,11 +99,6 @@ jobs:
           name: OpenWrt-18.06
           path: /workdir/openwrt/openwrt.tar.gz
 
-      - name: upload to cowtransfer
-        working-directory: /workdir
-        run: |
-          curl -fsSL git.io/file-transfer | sh
-          ./transfer cow --block 2621440 -s -p 64 --no-progress /workdir/openwrt/openwrt.tar.gz 2>&1 | tee cowtransfer.log
-          echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+
 
   
