@@ -3,7 +3,7 @@ name: build-openwrt-slim-firmware
 on: 
   push:
     tags: 
-      - 'v0.14.11'
+      - 'v0.14.13'
 
 env:
   SSH_ACTIONS: false
@@ -68,6 +68,7 @@ jobs:
         run: |
           cd openwrt
           sed -i '5s/#src-git/src-git/g' feeds.conf.default
+          echo "src-git OpenAppFilter https://github.com/destan19/OpenAppFilter" >> ./feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
@@ -320,6 +321,13 @@ jobs:
           # CONFIG_PACKAGE_kmod-ath9k is not set
           # CONFIG_PACKAGE_kmod-ath9k-htc is not set
           EOF
+
+          cat >> .config << EOF
+          CONFIG_PACKAGE_luci-app-n2n_v2=y
+          CONFIG_PACKAGE_luci-app-vlmcsd=y
+          CONFIG_PACKAGE_luci-app-oaf=y
+          CONFIG_PACKAGE_luci-app-ipsec-vpnd=y
+          EOF
           
           # 
           # ========================固件定制部分结束========================
@@ -350,7 +358,7 @@ jobs:
       - name: tar
         working-directory: /workdir
         run: |
-          cd /workdir/openwrt/bin && tar -zvcf ../openwrt.tar.gz *
+          cd /workdir/openwrt/bin && tar -zcf ../openwrt.tar.gz *
 
       - name: upload
         uses: actions/upload-artifact@master

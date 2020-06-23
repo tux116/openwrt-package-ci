@@ -46,7 +46,7 @@ jobs:
     - name: tar
       working-directory: /workdir
       run: |
-        cd ./openwrt-imagebuilder-*/bin/targets/x86/64 && tar -zvcf ./openwrt-imagebuilder-*/openwrt.tar.gz *
+        cd ./openwrt-imagebuilder-*/bin/targets/x86/64 && tar -zcf ./openwrt-imagebuilder-*/openwrt.tar.gz *
 
     - name: upload artifact
       uses: actions/upload-artifact@master
