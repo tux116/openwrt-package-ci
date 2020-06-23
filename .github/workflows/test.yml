@@ -3,7 +3,7 @@ name: test
 on: 
   push:
     tags: 
-      - 'v0.3.1'
+      - 'v0.3.3'
   watch:
     types: started
 
@@ -28,4 +28,6 @@ jobs:
    
     - name: scp
       run: |
-        scp /workdir/test-*.txt -o StrictHostKeyChecking=no -i ${{ secrets.SERVER_SSH_KEY }} ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
+        cat ${{ secrets.SERVER_SSH_KEY }} > ./sshkey
+        chmod 0400 ./sshkey
+        scp /workdir/test-*.txt -o StrictHostKeyChecking=no -i ./sshkey ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
