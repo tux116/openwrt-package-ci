@@ -3,7 +3,7 @@ name: test
 on: 
   push:
     tags: 
-      - 'v0.3.1'
+      - 'v0.3.2'
   watch:
     types: started
 
@@ -31,7 +31,7 @@ jobs:
       with:
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.KEY }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
         port: 22
         source: "/workdir/test-*.txt"
         target: ${{ secrets.REMOTE_TARGET }}
