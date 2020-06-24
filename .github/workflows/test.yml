@@ -31,5 +31,5 @@ jobs:
       run: |
         eval "$(ssh-agent -s)"
         ssh-add - <<< "${{ secrets.SERVER_SSH_KEY }}"
-        echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+        sudo echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
         scp /workdir/test-*.txt ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
