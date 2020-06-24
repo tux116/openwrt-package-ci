@@ -21,6 +21,7 @@ jobs:
 
     - name: ready
       run: |
+        sudo apt install -y openssh*
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
         cd /workdir
@@ -28,6 +29,7 @@ jobs:
    
     - name: scp
       run: |
-        cat ${{ secrets.SERVER_SSH_KEY }} > ./sshkey
-        chmod 0400 ./sshkey
-        scp /workdir/test-*.txt -o StrictHostKeyChecking=no -i ./sshkey ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
+        eval "$(ssh-agent -s)"
+        ssh-add -K ${{ secrets.SERVER_SSH_KEY }}
+        echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
+        scp /workdir/test-*.txt ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
