@@ -3,13 +3,9 @@ name: build-openwrt-slim-firmware
 on: 
   push:
     tags: 
-      - 'v0.14.13'
+      - '*'
 
 env:
-  SSH_ACTIONS: false
-  UPLOAD_BIN_DIR: false
-  UPLOAD_FIRMWARE: false
-  UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
 jobs:
@@ -52,7 +48,6 @@ jobs:
           rm -rf lean/luci-app-diskman/
           mkdir openwrt-packages
           cd openwrt-packages
-          git clone https://github.com/Leo-Jo-My/luci-theme-opentomcat.git
           git clone https://github.com/kuoruan/luci-app-frpc.git
           git clone https://github.com/lisaac/luci-app-dockerman.git
           git clone https://github.com/lisaac/luci-app-diskman.git
@@ -69,6 +64,7 @@ jobs:
           cd openwrt
           sed -i '5s/#src-git/src-git/g' feeds.conf.default
           echo "src-git OpenAppFilter https://github.com/destan19/OpenAppFilter" >> ./feeds.conf.default
+          echo "src-git themes https://github.com/tux116/themes" >> ./feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
@@ -327,6 +323,9 @@ jobs:
           CONFIG_PACKAGE_luci-app-vlmcsd=y
           CONFIG_PACKAGE_luci-app-oaf=y
           CONFIG_PACKAGE_luci-app-ipsec-vpnd=y
+          CONFIG_PACKAGE_luci-theme-opentomcat=y
+          CONFIG_PACKAGE_luci-theme-opentomato=y
+          CONFIG_PACKAGE_luci-theme-atmaterial=y
           EOF
           
           # 
@@ -358,17 +357,14 @@ jobs:
       - name: tar
         working-directory: /workdir
         run: |
-          cd /workdir/openwrt/bin && tar -zcf ../openwrt.tar.gz *
+          cd /workdir/openwrt/bin && tar -zcf ../openwrt-$(date +%Y%m%d).tar.gz *
 
-      - name: upload
-        uses: actions/upload-artifact@master
-        with:
-          name: OpenWrt-${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: /workdir/openwrt/openwrt.tar.gz
-
-      - name: upload to cowtransfer
+      - name: scp
         working-directory: /workdir
         run: |
-          curl -fsSL git.io/file-transfer | sh
-          ./transfer cow --block 2621440 -s -p 64 --no-progress /workdir/openwrt/openwrt.tar.gz 2>&1 | tee cowtransfer.log
-          echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+          sudo apt install -y openssh*
+          eval "$(ssh-agent -s)"
+          ssh-add - <<< "${{ secrets.SERVER_SSH_KEY }}"
+          [ -d ~/.ssh ] || mkdir ~/.ssh 
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          scp /workdir/openwrt/openwrt-*.tar.gz ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}

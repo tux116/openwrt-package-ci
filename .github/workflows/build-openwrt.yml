@@ -3,7 +3,7 @@ name: build-openwrt-18.06-firmware
 on: 
   push:
     tags: 
-      - 'v0.14.13'
+      - '*'
   # watch:
   #   types: started
 
@@ -51,8 +51,10 @@ jobs:
           rm -rf lede
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          wget https://downloads.openwrt.org/releases/18.06.4/targets/x86/64/config.seed -O ./.config
           cat >>./.config<<EOF
+          CONFIG_TARGET_x86=y
+          CONFIG_TARGET_x86_64=y
+          CONFIG_TARGET_x86_64_Generic=y
           CONFIG_GRUB_TIMEOUT="0"
           CONFIG_GRUB_TITLE="OpenWrt"
           CONFIG_VMDK_IMAGES=y
@@ -65,7 +67,7 @@ jobs:
           CONFIG_TARGET_PREINIT_IP="172.16.32.8"
           CONFIG_TARGET_PREINIT_BROADCAST="172.16.32.255"
           CONFIG_PACKAGE_luci-app-ssr-plus=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun=y
+          # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Kcptun is not set
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Shadowsocks=y
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server=y
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Socks=y
@@ -91,14 +93,17 @@ jobs:
       - name: tar
         working-directory: /workdir
         run: |
-          cd /workdir/openwrt/bin && tar -zcf ../openwrt.tar.gz *
+          cd /workdir/openwrt/bin && tar -zcf ../openwrt-18.06-$(date +%Y%m%d).tar.gz *
 
-      - name: upload
-        uses: actions/upload-artifact@master
-        with:
-          name: OpenWrt-18.06
-          path: /workdir/openwrt/openwrt.tar.gz
-
+      - name: scp
+        working-directory: /workdir
+        run: |
+          sudo apt install -y openssh*
+          eval "$(ssh-agent -s)"
+          ssh-add - <<< "${{ secrets.SERVER_SSH_KEY }}"
+          [ -d ~/.ssh ] || mkdir ~/.ssh 
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          scp /workdir/openwrt/openwrt-18.06-*.tar.gz ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
 
 
   
