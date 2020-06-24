@@ -3,7 +3,7 @@ name: test
 on: 
   push:
     tags: 
-      - 'v0.3.3'
+      - 'v0.3.4'
   watch:
     types: started
 
@@ -30,6 +30,6 @@ jobs:
     - name: scp
       run: |
         eval "$(ssh-agent -s)"
-        ssh-add -K ${{ secrets.SERVER_SSH_KEY }}
+        ssh-add -k ${{ secrets.SERVER_SSH_KEY }}
         echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
         scp /workdir/test-*.txt ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
