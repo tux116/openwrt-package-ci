@@ -4,8 +4,8 @@ on:
   push:
     tags: 
       - 'v0.14.13'
-  watch:
-    types: started
+  # watch:
+  #   types: started
 
 env:
   CONFIG_FILE: config.x64

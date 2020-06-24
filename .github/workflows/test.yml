@@ -30,6 +30,8 @@ jobs:
     - name: scp
       run: |
         eval "$(ssh-agent -s)"
-        ssh-add -k ${{ secrets.SERVER_SSH_KEY }}
+        cat ${{ secrets.SERVER_SSH_KEY }} > sshkey
+        cat sshkey && chmod 0600 sshkey
+        ssh-add -k sshkey
         echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
         scp /workdir/test-*.txt ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}

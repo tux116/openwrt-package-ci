@@ -4,8 +4,8 @@ on:
   push:
     tags: 
       - 'v0.3'
-  watch:
-    types: started
+  # watch:
+  #   types: started
 
 env:
   VERSION: 19.07.0
