@@ -1,25 +1,27 @@
-name: build-openwrt-18.06-firmware
+name: build-openwrt-19.07-firmware
 
 on: 
   push:
     tags: 
       - '*'
-  # watch:
-  #   types: started
+  watch:
+    types: started
 
 env:
-  CONFIG_FILE: config.x64
-  CONFIG_FILE_PKG: config.pkg
   TZ: Asia/Shanghai
 
 jobs:
   build:
+    name: Build OpenWrt 19.07 and Release
     runs-on: ubuntu-18.04
     if: github.event.repository.owner.id == github.event.sender.id
+    
     steps:
 
-      - name: Checkout
-        uses: actions/checkout@master
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
   
       - name: cleanup
         env:
@@ -37,10 +39,10 @@ jobs:
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
     
-      - name: complie
+      - name: git
         working-directory: /workdir
         run: |
-          git clone https://github.com/openwrt/openwrt.git -b openwrt-18.06 openwrt
+          git clone https://github.com/openwrt/openwrt.git -b openwrt-19.07 openwrt
           cd openwrt
           echo "src-git themes https://github.com/tux116/themes" >> ./feeds.conf.default
           echo "src-git helloworld https://github.com/fw876/helloworld" >> ./feeds.conf.default
@@ -49,8 +51,18 @@ jobs:
           mkdir package/other
           cp -r lede/package/lean/{ipt2socks,redsocks2,kcptun,luci-app-ipsec-vpnd,luci-app-n2n_v2,n2n_v2,luci-app-vlmcsd,vlmcsd,microsocks,shadowsocksr-libev,simple-obfs,tcpping,trojan,v2ray-plugin,v2ray,ipset-lists,pdnsd-alt,dns2socks} package/other/
           rm -rf lede
+
+      - name: feeds
+        working-directory: /workdir
+        run: |
+          cd openwrt      
           ./scripts/feeds update -a
           ./scripts/feeds install -a
+
+      - name: configure
+        working-directory: /workdir
+        run: |
+          cd openwrt           
           cat >>./.config<<EOF
           CONFIG_TARGET_x86=y
           CONFIG_TARGET_x86_64=y
@@ -72,7 +84,7 @@ jobs:
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Server=y
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Socks=y
           CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_V2ray=y
-          CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan=y
+          # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan is not set
           CONFIG_PACKAGE_luci-app-n2n_v2=y
           CONFIG_PACKAGE_luci-app-vlmcsd=y
           CONFIG_PACKAGE_luci-app-oaf=y
@@ -83,8 +95,18 @@ jobs:
           EOF
           sed -i 's/^[ \t]*//g' ./.config
           make defconfig
+
+      - name: download
+        working-directory: /workdir
+        run: |
+          cd openwrt   
           make download -j8
           find ./dl/ -size -1024c -exec rm -f {} \;
+
+      - name: compile
+        working-directory: /workdir
+        run: |
+          cd openwrt 
           make -j$(($(nproc) + 1)) V=s || make -j1 V=s
           du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
           du -h --max-depth=1 ./build_dir
@@ -93,7 +115,7 @@ jobs:
       - name: tar
         working-directory: /workdir
         run: |
-          cd /workdir/openwrt/bin && tar -zcf ../openwrt-18.06-$(date +%Y%m%d).tar.gz *
+          cd /workdir/openwrt/bin && tar -zcf ../openwrt-19.07-$(date +%Y%m%d).tar.gz *
 
       - name: scp
         working-directory: /workdir
@@ -103,7 +125,4 @@ jobs:
           ssh-add - <<< "${{ secrets.SERVER_SSH_KEY }}"
           [ -d ~/.ssh ] || mkdir ~/.ssh 
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
-          scp /workdir/openwrt/openwrt-18.06-*.tar.gz ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}
-
-
-  
+          scp /workdir/openwrt/openwrt-19.07-*.tar.gz ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_TARGET }}

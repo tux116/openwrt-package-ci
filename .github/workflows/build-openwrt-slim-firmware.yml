@@ -4,20 +4,21 @@ on:
   push:
     tags: 
       - '*'
+  # watch:
+  #   types: started
 
 env:
   TZ: Asia/Shanghai
 
 jobs:
-
-  build_openwrt:
-
-    name: Build OpenWrt and release
+  build:
+    name: Build OpenWrt and Release
     runs-on: ubuntu-18.04
     if: github.event.repository.owner.id == github.event.sender.id
 
     steps:
-      - name: Checkout
+      
+      - name: checkout
         uses: actions/checkout@v2
         with:
           ref: master

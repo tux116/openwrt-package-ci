@@ -12,7 +12,8 @@ env:
   TZ: Asia/Shanghai
 
 jobs:
-  build:
+  build_openwrt:
+    name: Build OpenWrt 19.07 and Release
     runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id
     steps:
