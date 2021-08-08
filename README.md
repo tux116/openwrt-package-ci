@@ -6,4 +6,3 @@
 
 ![build-openwrt-leno-firmware](https://github.com/tux116/openwrt-package-ci/workflows/build-openwrt-leno-firmware/badge.svg)
 
-test
