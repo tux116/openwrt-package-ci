@@ -57,11 +57,9 @@ jobs:
       working-directory: /workdir
       run: |
         tree openwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64/bin/targets/x86/64
-        cd openwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64/bin/targets/x86/64
-        qemu-img info *.img
-        qemu-img info *.vmdk
-        tar -zcf /workdir/openwrt-${VERSION}-x86-64.Linux-x86_64.tar.gz *
-        ls -al /workdir
+        qemu-img info openwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64/bin/targets/x86/64/*.img
+        qemu-img info openwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64/bin/targets/x86/64/*.vmdk
+        tar -zcf openwrt-${VERSION}-x86-64.Linux-x86_64.tar.gz openwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64/bin/targets/x86/64/*
         
 #     - name: upload artifact
 #       uses: actions/upload-artifact@master
