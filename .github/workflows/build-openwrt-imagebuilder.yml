@@ -51,8 +51,7 @@ jobs:
     - name: make
       run: |
         cd openwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64
-        make image PROFILE=generic PACKAGES="-bnx2-firmware -dnsmasq busybox dnsmasq-full luci luci-compat luci-i18n-base-zh-cn kmod-e100 kmod-e1000 kmod-vmxnet3 kmod-wireguard wireguard-tools luci-app-wireguard vpn-policy-routing luci-i18n-wireguard-zh-cn iptables iptables-mod-conntrack-extra iptables-mod-extra iptables-mod-tproxy ipset open-vm-tools" \ 
-        CONFIG_GRUB_TIMEOUT="0" CONFIG_VMDK_IMAGES=y CONFIG_TARGET_KERNEL_PARTSIZE=128 CONFIG_TARGET_ROOTFS_PARTSIZE=2048
+        make image PROFILE=generic PACKAGES="-bnx2-firmware -dnsmasq busybox dnsmasq-full luci luci-compat luci-i18n-base-zh-cn kmod-e100 kmod-e1000 kmod-vmxnet3 kmod-wireguard wireguard-tools luci-app-wireguard vpn-policy-routing luci-i18n-wireguard-zh-cn iptables iptables-mod-conntrack-extra iptables-mod-extra iptables-mod-tproxy ipset open-vm-tools" CONFIG_GRUB_TIMEOUT="0" CONFIG_VMDK_IMAGES=y CONFIG_TARGET_KERNEL_PARTSIZE=128 CONFIG_TARGET_ROOTFS_PARTSIZE=2048
 
     - name: test && package
       working-directory: /workdir
