@@ -65,7 +65,8 @@ jobs:
         sha256sum --tag openwrt* > openwrt.mf
         cd ..
         tar -C buildova --owner=root --group=root -cf images/openwrt-${VERSION}-x86-64.ova openwrt.ovf openwrt.vmdk openwrt.mf
-        tar -zcf openwrt-${VERSION}-x86-64.Linux-x86_64.tar.gz images/*
+        tree images
+        tar -zcvf openwrt-${VERSION}-x86-64.Linux-x86_64.tar.gz images/*
         
 #     - name: upload artifact
 #       uses: actions/upload-artifact@master
