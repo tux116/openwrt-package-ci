@@ -1,11 +1,12 @@
 name: build-openwrt-slim-firmware
 
 on: 
-  push:
-    tags: 
-      - '*'
+  # push:
+  #   tags: 
+  #     - '*'
   # watch:
   #   types: started
+  workflow_dispatch:
 
 env:
   TZ: Asia/Shanghai

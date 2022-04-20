@@ -1,12 +1,12 @@
 name: build-openwrt-19.07-firmware
 
 on: 
-  push:
-    tags: 
-      - '*'
-  watch:
-    types: started
-
+  # push:
+  #   tags: 
+  #     - '*'
+  # watch:
+  #   types: started
+  workflow_dispatch:
 env:
   TZ: Asia/Shanghai
 

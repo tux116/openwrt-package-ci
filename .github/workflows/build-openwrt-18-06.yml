@@ -1,11 +1,12 @@
 name: build-openwrt-18.06-firmware
 
 on: 
-  push:
-    tags: 
-      - '*'
-  watch:
-    types: started
+  # push:
+  #   tags: 
+  #     - '*'
+  # watch:
+  #   types: started
+  workflow_dispatch:
 
 env:
   TZ: Asia/Shanghai
