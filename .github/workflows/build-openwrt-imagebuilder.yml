@@ -53,7 +53,7 @@ jobs:
         cd openwrt-imagebuilder-${VERSION}-x86-64.Linux-x86_64
         make image PROFILE=generic PACKAGES="-bnx2-firmware -dnsmasq busybox dnsmasq-full luci luci-compat luci-i18n-base-zh-cn kmod-e100 kmod-e1000 kmod-vmxnet3 kmod-wireguard wireguard-tools luci-app-wireguard vpn-policy-routing luci-i18n-wireguard-zh-cn iptables iptables-mod-conntrack-extra iptables-mod-extra iptables-mod-tproxy ipset open-vm-tools" CONFIG_GRUB_TIMEOUT="0" CONFIG_VDI_IMAGES=y CONFIG_VMDK_IMAGES=y CONFIG_TARGET_KERNEL_PARTSIZE=128 CONFIG_TARGET_ROOTFS_PARTSIZE=2048
 
-    - name: test && package
+    - name: package
       run: |
         echo $PWD
         cd /home/runner/work/openwrt-package-ci/openwrt-package-ci
@@ -67,6 +67,13 @@ jobs:
         tar -C buildova --owner=root --group=root -cf images/openwrt-${VERSION}-x86-64.ova openwrt.ovf openwrt.vmdk openwrt.mf
         tree images
         tar -zcvf openwrt-${VERSION}-x86-64.Linux-x86_64.tar.gz images/*
+
+    - name: test
+      run: |
+        sudo apt install virtualbox -y
+        VBoxManage import buildova/openwrt.ovf --dry-run
+        echo "ova dry-run"
+        VBoxManage import images/openwrt-${VERSION}-x86-64.ova --dry-run
         
 #     - name: upload artifact
 #       uses: actions/upload-artifact@master
