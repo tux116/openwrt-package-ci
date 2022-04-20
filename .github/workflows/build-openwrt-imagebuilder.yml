@@ -75,10 +75,12 @@ jobs:
         echo "-------------ova dry-run-------------"
         VBoxManage import images/openwrt-${VERSION}-x86-64.ova --dry-run
         
-    - name: upload artifact
-      uses: actions/upload-artifact@master
+    - name: release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: OpenWrt-${{ env.VERSION }}
-        path: images/*
+        files: images/*
+        prerelease: ${{ contains(github.ref, '-') }}
 
 
