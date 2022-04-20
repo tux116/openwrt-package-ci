@@ -1,13 +1,13 @@
 name: build-openwrt-imagebuilder
 
-# on: 
-#   push:
-#     tags: 
-#       - 'v0.3'
-on:
-  workflow_dispatch:
-  # watch:
-  #   types: started
+on: 
+  push:
+    tags: 
+      - 'v*'
+# on:
+#   workflow_dispatch:
+#   # watch:
+#   #   types: started
 
 env:
   VERSION: 21.02.2
@@ -66,19 +66,20 @@ jobs:
         cd ..
         tar -C buildova --owner=root --group=root -cf images/openwrt-${VERSION}-x86-64.ova openwrt.ovf openwrt.vmdk openwrt.mf
         tree images
-        tar -zcvf openwrt-${VERSION}-x86-64.Linux-x86_64.tar.gz images/*
+        # tar -zcvf openwrt-${VERSION}-x86-64.Linux-x86_64.tar.gz images/*
 
     - name: test
       run: |
         sudo apt install virtualbox -y
+        echo "-------------ovf dry-run-------------"
         VBoxManage import buildova/openwrt.ovf --dry-run
-        echo "ova dry-run"
+        echo "-------------ova dry-run-------------"
         VBoxManage import images/openwrt-${VERSION}-x86-64.ova --dry-run
         
-#     - name: upload artifact
-#       uses: actions/upload-artifact@master
-#       with:
-#         name: OpenWrt-${{ env.VERSION }}
-#         path: ./openwrt-${VERSION}-x86-64.Linux-x86_64.tar.gz
+    - name: upload artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: OpenWrt-${{ env.VERSION }}
+        path: images/*
 
 
