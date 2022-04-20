@@ -4,10 +4,9 @@ on:
   push:
     tags: 
       - 'v*'
-# on:
-#   workflow_dispatch:
-#   # watch:
-#   #   types: started
+  workflow_dispatch:
+  # watch:
+  #   types: started
 
 env:
   VERSION: 21.02.2
