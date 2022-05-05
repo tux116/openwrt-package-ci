@@ -1,6 +1,6 @@
 .encoding = "GBK"
 config.version = "8"
-virtualHW.version = "17"
+virtualHW.version = "18"
 pciBridge0.present = "TRUE"
 pciBridge4.present = "TRUE"
 pciBridge4.virtualDev = "pcieRootPort"
